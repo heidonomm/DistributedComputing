@@ -39,16 +39,6 @@ type ResponseAvailability struct {
 	Body    []int    `xml:"body>availability>slot_id"`
 }
 
-// type bodyAvailability struct {
-// 	XMLName      xml.Name     `xml:"body"`
-// 	Availability availability `xml:"availability"`
-// }
-
-// type availability struct {
-// 	XMLName xml.Name `xml:"availability"`
-// 	SlotId  []int    `xml:"slot_id"`
-// }
-
 type RequestBookings struct {
 	XMLName   xml.Name `xml:"bookings"`
 	RequestID int      `xml:"request_id"`

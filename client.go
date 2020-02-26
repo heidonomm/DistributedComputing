@@ -7,13 +7,26 @@ import (
 	"net/http"
 )
 
-const HotelPort = 3010
-const BandPort = 3020
+func ReserveSlot(port int, slotID int) []byte {
+	return RequestSingle(port, slotID, buildRequestReserve)
+}
+
+func CancelSlot(port int, slotID int) []byte {
+	return RequestSingle(port, slotID, buildRequestCancel)
+}
+
+func getFreeSlots(port int) []byte {
+	return RequestMultiple(port, buildRequestAvailability)
+}
+
+func getBookings(port int) []byte {
+	return RequestMultiple(port, buildRequestBookings)
+}
 
 type funcGetAll func() []byte
-type funcPutRequest func(slotID int) []byte
+type funcGetSingle func(slotID int) []byte
 
-func RequestSlot(port int, slotID int, putRequest funcPutRequest) {
+func RequestSingle(port int, slotID int, putRequest funcGetSingle) []byte {
 
 	body := putRequest(slotID)
 	url := fmt.Sprintf("http://jewel.cs.man.ac.uk:%d/queue/enqueue", port)
@@ -33,11 +46,12 @@ func RequestSlot(port int, slotID int, putRequest funcPutRequest) {
 	}
 
 	bodyRes, _ := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-	fmt.Println(string(bodyRes))
+	resp.Body.Close()
+
+	return bodyRes
 }
 
-func RequestFreeSlots(port int, getAll funcGetAll) []byte {
+func RequestMultiple(port int, getAll funcGetAll) []byte {
 
 	body := getAll()
 	url := fmt.Sprintf("http://jewel.cs.man.ac.uk:%d/queue/enqueue", port)
@@ -57,5 +71,7 @@ func RequestFreeSlots(port int, getAll funcGetAll) []byte {
 	}
 
 	bodyRes, _ := ioutil.ReadAll(resp.Body)
+	resp.Body.Close()
+
 	return bodyRes
 }
